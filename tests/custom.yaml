@@ -1,0 +1,213 @@
+version: 4.5
+tests:
+  testBlockComments:
+    source: |
+      Add the @bacon [- make sure not to burn -] and cook for ~{2%minutes}
+    result:
+      steps:
+        -
+          - type: text
+            value: "Add the "
+          - type: ingredient
+            quantity: "some"
+            units: ""
+            name: "bacon"
+          - type: text
+            value: " and cook for "
+          - type: timer
+            quantity: 2
+            units: "minutes"
+            name: ""
+      metadata: []
+
+  testMultipleBlockComments:
+    source: |
+      Add some [- comment -] @salt and [- another comment -] @pepper
+    result:
+      steps:
+        -
+          - type: text
+            value: "Add some "
+          - type: ingredient
+            quantity: "some"
+            units: ""
+            name: "salt"
+          - type: text
+            value: " and "
+          - type: ingredient
+            quantity: "some"
+            units: ""
+            name: "pepper"
+      metadata: []
+
+  testMultilineBlockComments:
+    source: |
+      Add the @bacon [- make sure
+      not to burn -] and cook for ~{2%minutes}
+    result:
+      steps:
+        - - type: text
+            value: "Add the "
+          - type: ingredient
+            quantity: "some"
+            units: ""
+            name: "bacon"
+          - type: text
+            value: " and cook for "
+          - type: timer
+            quantity: 2
+            units: "minutes"
+            name: ""
+      metadata: []
+
+  testMultiWordFollowingSingleWordIngredient:
+    source: |
+      @ingredient and @ingredient with spaces{}
+    result:
+      steps:
+        -
+          - type: ingredient
+            quantity: "some"
+            units: ""
+            name: "ingredient"
+          - type: text
+            value: " and "
+          - type: ingredient
+            quantity: "some"
+            units: ""
+            name: "ingredient with spaces"
+      metadata: []
+
+  testSingleWordIngredientFollowedByPunctuation:
+    source: |
+      @ingredient, then step.
+    result:
+      steps:
+        -
+          - type: ingredient
+            quantity: "some"
+            units: ""
+            name: "ingredient"
+          - type: text
+            value: ", then step."
+      metadata: []
+
+  testMultiWordFollowingSingleWordCookware:
+    source: |
+      #pan and #big cooking pot{}
+    result:
+      steps:
+        -
+          - type: cookware
+            name: "pan"
+            quantity: 1
+          - type: text
+            value: " and "
+          - type: cookware
+            name: "big cooking pot"
+            quantity: 1
+      metadata: []
+
+  testSingleWordCookwareFollowedByPunctuation:
+    source: |
+      #pan, then step.
+    result:
+      steps:
+        -
+          - type: cookware
+            name: "pan"
+            quantity: 1
+          - type: text
+            value: ", then step."
+      metadata: []
+
+
+  testMultiWordFollowingSingleWordCookwareAndIngredient:
+    source: |
+      #pan and @ingredient in #big cooking pot{}
+    result:
+      steps:
+        -
+          - type: cookware
+            name: "pan"
+            quantity: 1
+          - type: text
+            value: " and "
+          - type: ingredient
+            quantity: "some"
+            units: ""
+            name: "ingredient"
+          - type: text
+            value: " in "
+          - type: cookware
+            name: "big cooking pot"
+            quantity: 1
+      metadata: []
+
+
+  testMultiWordFollowingSingleWordIngredientAndCookware:
+    source: |
+      @ingredient in #pan and @other ingredient{}
+    result:
+      steps:
+        -
+          - type: ingredient
+            quantity: "some"
+            units: ""
+            name: "ingredient"
+          - type: text
+            value: " in "
+          - type: cookware
+            name: "pan"
+            quantity: 1
+          - type: text
+            value: " and "
+          - type: ingredient
+            quantity: "some"
+            units: ""
+            name: "other ingredient"
+      metadata: []
+
+
+  testNonnumericQuantityContainingSlash:
+    source: |
+      @soy sauce{1/4 cup}
+    result:
+      steps:
+        -
+          - type: ingredient
+            quantity: "1/4 cup"
+            units: ""
+            name: "soy sauce"
+      metadata: []
+
+  testMarkdownLinkInMetadata:
+    source: |
+      >> source: [Small Town Woman](https://www.smalltownwoman.com/easy-matzo-ball-soup/)
+    result:
+      steps: []
+      metadata:
+        "source": "[Small Town Woman](https://www.smalltownwoman.com/easy-matzo-ball-soup/)"
+
+  testCRLFLineEndings:
+    source: ">> source: example.com\r\nstep"
+    result:
+      steps:
+        -
+          - type: text
+            value: "step"
+      metadata:
+        "source": "example.com"
+
+  testShortHandPreparation:
+    source: |
+      @onion{1}(peeled and finely chopped)
+    result:
+      steps:
+        -
+          - type: ingredient
+            quantity: 1
+            units: ""
+            name: "onion"
+            preparation: "peeled and finely chopped"
+      metadata: []
